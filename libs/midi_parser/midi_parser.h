@@ -37,6 +37,9 @@
 #define ACTIVE_SENSING 0xFE
 #define SYSTEM_RESET 0xFF
 
+// Broadcast channel, these messages are for everyone
+#define BROADCAST 0xFF
+
 struct midiMsg {
   uint8_t channel;
   uint8_t status;
