@@ -8,6 +8,13 @@ Directory structure:
 ** location for various common libraries
 
 
+Team Members:
+============
+Note: add yourself to this list 
+* Uriah Baalke 
+* 
+
+
 
 
 
