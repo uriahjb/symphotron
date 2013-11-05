@@ -1,4 +1,11 @@
-symphotron
+Symphotron
 ==========
 
-robot symphony libraries
+Common code for IPD516's robotic jazz symphony.
+
+
+
+
+
+
+
