@@ -1,12 +1,16 @@
 
 CC = g++
 CFLAGS = -g -Os 
-INCLUDES = ../
+INCLUDES = -I../
+SRC = ../*.cpp
 
-all: bqueue
+all: bqueue midi_parser
 
-bqueue: ; $(CC) test_bqueue.cpp $(CFLAGS) -I $(INCLUDES) ../bqueue.cpp -o build/test_bqueue
 
+
+bqueue: ; $(CC) test_bqueue.cpp $(CFLAGS) $(INCLUDES) $(SRC) -o build/test_bqueue
+
+midi_parser: ; $(CC) test_parser.cpp $(CFLAGS) $(INCLUDES) $(SRC) -o build/test_parser
 clean: ; rm -rf build/*
 
 

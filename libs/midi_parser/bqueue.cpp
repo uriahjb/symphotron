@@ -14,8 +14,12 @@ bQueue::bQueue( void ) {
 
 uint8_t bQueue::isempty( void ) {
   if ( byte_cnt > 0 ) 
-    return true;
-  return false;
+    return false;
+  return true;
+}
+
+uint8_t bQueue::bytesAvailable( void ) {
+  return byte_cnt;
 }
 
 uint8_t bQueue::enqueue( uint8_t byte ) {
