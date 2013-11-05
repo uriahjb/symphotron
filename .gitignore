@@ -1,1 +1,6 @@
+# Ignore files produced during compilation
+*.o
 *.dSYM
+
+# From my vim 
+*.swp
