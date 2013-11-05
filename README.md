@@ -12,7 +12,7 @@ Team Members:
 ============
 Note: add yourself to this list 
 * Uriah Baalke 
-* 
+* Tyler Barkin
 
 
 
