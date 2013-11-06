@@ -94,7 +94,6 @@ CXXOBJS = $(patsubst %.s,$(BUILDDIR)/%.o,$(_CXXOBJS))
 
 VPATH := $(sort $(dir $(_CSRCS) $(_CXXSRCS)))
 
-
 #------------------------------------------------------------------------------
 .PHONY: proj disassemble serialflash flash clean cleanlib
 

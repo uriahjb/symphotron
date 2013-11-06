@@ -22,7 +22,6 @@ int main( void )
 
     mYellowON;
     
-    uint8_t cnt = 0;
     while(1)
     {
         mWaitms(500);
