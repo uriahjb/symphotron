@@ -13,7 +13,7 @@ Directory structure:
 
 First Steps:
 * Add yourself to the Team Members list 
-* Copy stm32f37x_common into platforms/m4
+* Copy stm32f37x_common from m4TemplateWhite into platforms/m4
 * Edit the Makefile in instruments/template and make the template code. 
 
 Team Members:
