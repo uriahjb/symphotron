@@ -20,6 +20,7 @@ Team Members:
 ============
 * Uriah Baalke 
 * Tyler Barkin
+* Chaitanya Bhargava
 
 
 
