@@ -11,9 +11,13 @@ Directory structure:
 * platforms 
   * platform specific common code currently just for the m4 ... if we end up using multiple platforms, hopefully not :)
 
+First Steps:
+* Add yourself to the Team Members list 
+* Copy stm32f37x_common into platforms/m4
+* Edit the Makefile in instruments/template and make the template code. 
+
 Team Members:
 ============
-Note: add yourself to this list 
 * Uriah Baalke 
 * Tyler Barkin
 
