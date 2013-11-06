@@ -9,7 +9,7 @@ Directory structure:
 * instruments
   * location for instrument specific code
 * platforms 
-  * platform specific common code currently just for the m4 ... if we end up using multiple platforms, hopefully not :)
+  * platform specific common code, currently just for the m4
 
 First Steps:
 * Add yourself to the Team Members list 
