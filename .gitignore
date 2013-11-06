@@ -1,6 +1,9 @@
 # Ignore files produced during compilation
 *.o
 *.dSYM
+*.bin
+*.elf
+*.map
 
 # From my vim 
 *.swp
