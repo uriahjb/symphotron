@@ -7,3 +7,6 @@
 
 # From my vim 
 *.swp
+
+# Ignore stm32f37x_common directory since it doesn't need to be here
+stm32f37x_common/
