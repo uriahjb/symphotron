@@ -4,8 +4,8 @@ Symphotron
 Common code for IPD516's robotic jazz symphony.
 
 Directory structure:
-* libs
-  * location for various common libraries
+* utils
+  * location for various common tools and interfaces
 * instruments
   * location for instrument specific code
 * platforms 
