@@ -1,0 +1,24 @@
+mEasy.h
+Function that are working:
+
+GPIO SET:
+
+void set_gpio(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin,int a);
+
+Usage:
+set_gpio(GPIOA,GPIO_Pin_1,MODE_OUT); //will set GPIO Pin 1 on Port A, to Output (Easy right)
+
+First Variable = {GPIOA,GPIOB,GPIOC,GPIOE,GPIOF}
+Second Variable = {GPIO_Pin_n} n={1,2,3 . . . 15}
+Third Variable = {MODE_IN , MODE_OUT , MODE_ANALOG , Mode_Alt_Function}
+ 
+OUTPUT HIGH:
+GPIO_SetBits(GPIOx,GPIO_Pin_n);
+
+OUTPUT LOW:
+GPIO_ResetBits(GPIOx,GPIO_Pin_n);
+
+
+Functions that soon will be working
+set_pwm();
+
