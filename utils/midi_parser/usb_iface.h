@@ -19,7 +19,7 @@ public:
   void readBytes( void );
   void writeBytes( void );
 
-  // TODO: printf utility function 
+  // printf utility function 
   int8_t printf( char* fmt, ... );
 
 private:
