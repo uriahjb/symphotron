@@ -8,7 +8,99 @@ Pipeline
 
 Our midi pipeline is as follows:
 
-File.mid -> Python-Midi Sequencer -> Raw Data -> MCU midi_parser
+###### File.mid  ->  Python-Midi Sequencer  ->  Raw Data  ->  MCU midi_parser
+
+Midi Parser
+===========
+
+Usage:
+* Initialize midiParser passing it input queue to be filled by usb interface
+* Check for input messages and handle accordingly 
+
+##### Message Status Types:
+```c
+/ Channel voice messages
+#define NOTE_OFF 0x80
+#define NOTE_ON  0x90
+#define POLYPHONIC_AFTERTOUCH 0xA0
+#define CONTROL_CHANGE 0xB0
+#define PROGRAM_CHANGE 0xC0
+#define CHANNEL_PRESSURE 0xD0
+#define PITCH_WHEEL 0xE0
+
+// System common messages
+#define SYSTEM_EXCLUSIVE 0xF0
+#define TIME_QTR_FRAME 0xF1
+#define SONG_POS_PTR 0xF2
+#define SONG_SELECT 0xF3
+#define TUNE_REQ 0xF6
+#define EOX 0xF7
+
+// System Real-Time messages
+#define TIMING_CLOCK 0xF8
+#define START 0xFA
+#define CONTINUE 0xFB
+#define STOP 0xFC
+#define ACTIVE_SENSING 0xFE
+#define SYSTEM_RESET 0xFF
+
+// Broadcast channel, these messages are for everyone
+#define BROADCAST 0xFF
+```
+
+
+##### Example:
+```c
+extern "C" {                                                                              
+#include "mGeneral.h"                                                                     
+#include "mBus.h"                                                                         
+#include "mUSB.h"                                                                         
+}                                                                                         
+                                                                                          
+#include "bqueue.h"                                                                       
+#include "usb_iface.h"
+#include "midi_parser.h"
+                                                                                          
+int main( void )                                                                          
+{                                                                                         
+    // Initialize m4 things                                                               
+    mInit();                                                                              
+    //mBusInit();                                                                         
+    mUSBInit();                                                                           
+    
+    // Initialize in/out queues
+    bQueue in_q;                                                                          
+    bQueue out_q;
+                                                                                          
+    // Set up usb interface                                                               
+    usbIface usb( &in_q, &out_q );                                                        
+  
+    // Initialize midi parser
+    midiParser midi( &in_q );
+    midiMsg midi_msg;
+                                                                                          
+    mYellowON;                                                                            
+                                                                                          
+    while(1)                                                                              
+    {            
+    
+        // Fill input queue with usb data
+        usb.readBytes()
+        
+        // Check if message has been received
+        if ( midi.hasMsg( msg ) ) {
+          usb.printf("msg: \n"
+                     "\tstatus: %02x\n"
+                     "\tchannel: %02x\n"                                                          
+                     "\tdata[0]: %02x\n"
+                     "\tdata[1]: %02x\n", msg.status, msg.channel, msg.data[0], msg.data[1]);     
+        }
+                                                                                          
+        // Write usb data out                                                                 
+        usb.writeBytes();                                                                 
+    }                                                                                     
+}               
+```
 
 File.mid
 ==============
@@ -104,64 +196,6 @@ print "Sequencing Complete"
 
 ```
 
-Midi Parser
-===========
-
-Usage:
-* Initialize midiParser passing it input queue to be filled by usb interface
-* Check for input messages and handle accordingly 
-
-```
-extern "C" {                                                                              
-#include "mGeneral.h"                                                                     
-#include "mBus.h"                                                                         
-#include "mUSB.h"                                                                         
-}                                                                                         
-                                                                                          
-#include "bqueue.h"                                                                       
-#include "usb_iface.h"
-#include "midi_parser.h"
-                                                                                          
-int main( void )                                                                          
-{                                                                                         
-    // Initialize m4 things                                                               
-    mInit();                                                                              
-    //mBusInit();                                                                         
-    mUSBInit();                                                                           
-    
-    // Initialize in/out queues
-    bQueue in_q;                                                                          
-    bQueue out_q;
-                                                                                          
-    // Set up usb interface                                                               
-    usbIface usb( &in_q, &out_q );                                                        
-  
-    // Initialize midi parser
-    midiParser midi( &in_q );
-    midiMsg midi_msg;
-                                                                                          
-    mYellowON;                                                                            
-                                                                                          
-    while(1)                                                                              
-    {            
-    
-        // Fill input queue with usb data
-        usb.readBytes()
-        
-        // Check if message has been received
-        if ( midi.hasMsg( msg ) ) {
-          usb.printf("msg: \n"
-                     "\tstatus: %02x\n"
-                     "\tchannel: %02x\n"                                                          
-                     "\tdata[0]: %02x\n"
-                     "\tdata[1]: %02x\n", msg.status, msg.channel, msg.data[0], msg.data[1]);     
-        }
-                                                                                          
-        // Write usb data out                                                                 
-        usb.writeBytes();                                                                 
-    }                                                                                     
-}               
-```
 
   
 
