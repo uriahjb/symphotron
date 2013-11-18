@@ -12,6 +12,8 @@ Directory structure:
   * location for instrument specific code
 * platforms 
   * platform specific common code, currently just for the m4
+* host
+  * code and tools used on the host computer, primarily for the sequencer
 
 First Steps:
 * Add yourself to the Team Members list 
