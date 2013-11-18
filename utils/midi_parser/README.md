@@ -8,7 +8,7 @@ Pipeline
 
 Our midi pipeline is as follows:
 
-###### File.mid  ->  Python-Midi Sequencer  ->  Raw Data  ->  MCU midi_parser
+###### File.mid  ->  Host-Side Python-Midi Sequencer  ->  USB  ->  MCU midi_parser
 
 Midi Parser
 ===========
