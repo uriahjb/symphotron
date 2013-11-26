@@ -38,7 +38,7 @@ void usbIface::writeBytes( void ) {
 }
 
 int8_t usbIface::printf( char* fmt, ... ) {
-    uint8_t len;
+    uint16_t len;
     va_list args;
     va_start( args, fmt );
     vsprintf( m_print_str, fmt, args );

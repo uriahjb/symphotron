@@ -9,7 +9,7 @@ extern "C" {
 
 #include "bqueue.h"
 
-#define MAX_PRINT_LEN 64
+#define MAX_PRINT_LEN 256
 
 class usbIface {
 public:

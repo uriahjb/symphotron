@@ -7,6 +7,7 @@ At the moment this assumes that the tempo is fixed
 
 import sys
 from time import time as now 
+import serial
 
 from midi import read_midifile
 from midi.events import *
@@ -27,8 +28,11 @@ def encode_midi_event(event):
         raise ValueError, "Unknown MIDI Event: " + str(event)
     return ret
 
+# Set up serial
+ser = serial.Serial('/dev/tty.usbmodem1411')
+
 # Load in midi file
-filename = '../mary.mid'
+filename = 'mary.mid'
 pattern = read_midifile(filename)
 
 # Convert event ticks into absolute times
@@ -60,6 +64,7 @@ while len(events):
       events.insert(0, evt)  
       break
     hxstr = ":".join("{0:x}".format(ord(c)) for c in encode_midi_event(evt))
+    ser.write( encode_midi_event(evt) )
     print evt, hxstr, curtime
 print "Sequencing Complete"
 
