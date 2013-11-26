@@ -3,7 +3,7 @@
  Provides a speed setter/getter interface, keeps track of the current stepper counts.
  */
 //#include "mbed.h"
-//
+
 #ifndef STEPPER_H
 #define STEPPER_H
 
@@ -16,6 +16,7 @@
 #include <math.h>
 #include "arm_math.h"
 
+
 #define Clock_Divide 30
 #define STEP_FULL 0
 #define STEP_HALF 1
@@ -27,9 +28,10 @@
 void stepper_setup(void);
 void set_speed(uint16_t speed);
 
+
 void Stepper( void );
 void Start( void );
-void stop( void );
+void Stop( void );
 void accStart(void);
 void accStop(void);
 void updateCount(void);
@@ -49,5 +51,8 @@ void setPosition( int32_t desired_position );
 
 int update( int16_t Note);
 void Arrived(void);
+
+extern float m_speed_min;
+extern float m_speed_max;
 
 #endif

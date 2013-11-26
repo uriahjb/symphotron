@@ -1,6 +1,6 @@
 # Location of symphotron libs ... remember to update this for 
 # your machine
-SYMPHOTRON = /Users/ujb/Class/IPD516/symphotron
+SYMPHOTRON = /Users/tylerbarkin/Documents/UPenn/Reactive_Spaces/git/symphotron
 
 PROJNAME  = main
 BUILDDIR  = obj

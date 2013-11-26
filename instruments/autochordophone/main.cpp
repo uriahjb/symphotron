@@ -1,4 +1,3 @@
-// These are C things extern C so we can mix C and CPP
 extern "C" {
 #include "mGeneral.h"
 #include "mBus.h"
@@ -6,17 +5,35 @@ extern "C" {
 #include "stdio.h"
 #include "stm32f37x.h"
 #include "mEasy.h"
+//#include "stepper.h"
 #include <math.h>
 #include "arm_math.h"
 #include "Stepper.h"
 }
 
+#define rest 1
+#define C -50
+#define Df -100
+#define D -150
+#define Ef -200
+#define E -250
+#define F -300
+#define Gf -350
+#define G -400
+#define Af -550
+#define A -600
+#define Bf -650
+#define B -700
+
+volatile uint16_t p=0;
+volatile uint16_t T5flag=1;
+
 uint8_t a;
 int8_t dir;
 int8_t dir_cmd=1;
-int pose=1;
+volatile int pose=1;
 int k=0;
-uint32_t p=4000;
+
 int test2=0;
 int f=0;
 
@@ -35,6 +52,10 @@ void hold(uint16_t T){ //Timer up to 1 seconds. (currently)
     TIM_Cmd(TIM5, ENABLE);
 }
 
+void strum_speed(float speed){
+    TIM5->ARR=60000*speed;
+    //        TIM5->CNT=0;
+}
 
 
 int main( void )
@@ -44,44 +65,40 @@ int main( void )
     mBusInit();
     
     picker_setup();
-//    stepper_setup();
-//    set_timer5 (60000,30000,1200);
+    stepper_setup();
+    set_timer5 (60000,30000,1200);
     
-//    setMode( STEP_FULL);
-//    setSpeedLimits( 65, 300 );
-//    set_speed(m_speed_min);
-//    setAccelerationLimit(500); //5000 is good
+    setMode( STEP_FULL);
+    setSpeedLimits( 65, 650 );
+    set_speed(m_speed_min);
+    setAccelerationLimit(1000); //5000 is good
     
     
     int test=0;
     
-    uint16_t pos[]={0,-100000,0,-360,0,-540,0,-720,-900,-1020,0};
+    uint16_t pos[]={0,-180,0,-360,0,-540,0,-720,-900,0};
     uint16_t dur[]={1000,1000,1000,1000};
     
-    //set_speed(m_speed_min);
-    uint16_t i=3400;
+    set_speed(m_speed_min);
+    float i=0;
     while(1)
     {
         
-        strum();
-//        modulatePick(i);
-        mWaitms(85);
-        i=i+100;
-//        test = update(pos[test2]);
-//        if(test==1){
-//            test2++;
-////            if(f!=1){
-////            hold(1);
-////            f=1;
-////            }
-//        }
-//        if(test2>=11){
-//            test2=11;
-//            mWhiteON;
-//        }
-////        if(f!=1)
-////            TIM_Cmd(TIM5, DISABLE);
-////        mGreenON;
+        
+        
+        test = update(pos[test2]);
+        if(test==1){
+            mRedOFF;
+            strum_speed(1-i/11);
+            test2++;
+            i++;
+            
+            //            mWaitms(100);
+        }
+        if(test2>=11){
+            test2=11;
+            mWhiteON;
+        }
     }
     return(0);
 }
@@ -128,9 +145,10 @@ void damp(void){
 
 void TIM5_IRQHandler(void)
 {
-    test2++;
+    mRedON;
+    strum();
     TIM_ClearFlag(TIM5,TIM_FLAG_CC1);
-    f=0;
+    TIM5->CNT=0;
 }
 void TIM12_IRQHandler(void)
 {

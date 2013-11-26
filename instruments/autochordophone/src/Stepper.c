@@ -187,7 +187,7 @@ int update( int16_t Note ) {
     }
     switch(com1){
         case 1:
-            stop();
+            Stop();
             return(1);
             break;
         case 2:
@@ -244,3 +244,4 @@ void TIM4_IRQHandler(void)
     }
     TIM_ClearFlag(TIM4,TIM_FLAG_CC1);
 }
+
