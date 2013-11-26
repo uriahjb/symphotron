@@ -34,7 +34,7 @@ void set_gpio(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin,int a){
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN; //analog (for DAC or ADC)
     else{
         GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF; //Alt Function for PWM
-        mBlueON;
+//        mBlueON;
     }
     
     
@@ -48,16 +48,13 @@ void set_gpio(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin,int a){
     GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
     GPIO_Init(GPIOx, &GPIO_InitStructure);
 }
-void set_pwm (uint16_t Per,uint16_t Pul,uint16_t PreScale){
+void set_pwm_servo (uint16_t Per,uint16_t Pul,uint16_t PreScale){
     NVIC_InitTypeDef NVIC_InitStructure;
     
     TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
     TIM_OCInitTypeDef  TIM_OCInitStructure;
     
-    
-    
-    
-    
+
     /* TIM12 clock enable */
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM12, ENABLE);
     
@@ -117,7 +114,53 @@ void set_pwm (uint16_t Per,uint16_t Pul,uint16_t PreScale){
     TIM_GenerateEvent(TIM12, TIM_EventSource_Update);
     
 }/*Not even close to complete yet. Needs a lot a lot of work and decisions*/
+void set_pwm_stepper (uint16_t Per,uint16_t Pul,uint16_t PreScale){
+    NVIC_InitTypeDef NVIC_InitStructure;
+    
+    TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+    TIM_OCInitTypeDef  TIM_OCInitStructure;
+    
+    
+    /* TIM2 clock enable */
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+    
+    /* Enable the TIM3 global Interrupt */
+    NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
+    
+    /* Time base configuration */
+    TIM_TimeBaseStructure.TIM_Period = Per;
+    TIM_TimeBaseStructure.TIM_Prescaler = PreScale;
+    TIM_TimeBaseStructure.TIM_ClockDivision = 0;
+    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+    
+    TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
+    
+    /* Output Compare Toggle Mode configuration: Channel2 */
+    TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
+    TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
+    TIM_OCInitStructure.TIM_Pulse = Pul;
+    TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+    TIM_OC2Init(TIM2, &TIM_OCInitStructure);
+    TIM_OC2PreloadConfig(TIM2, TIM_OCPreload_Disable);
 
+    /* TIM enable counter */
+    TIM_Cmd(TIM2, ENABLE);
+    
+    /* TIM IT enable */
+    TIM_ITConfig(TIM2, TIM_IT_CC2, ENABLE);
+    TIM_GenerateEvent(TIM2, TIM_EventSource_Update);
+    
+}/*Not even close to complete yet. Needs a lot a lot of work and decisions*/
+
+void modulateArm(uint32_t i){
+    TIM12->CCR1 = i;
+}
+void modulatePick(uint32_t i){
+    TIM12->CCR2 = i;
+}
 
 
 void G_interrupt(void){
@@ -145,8 +188,6 @@ void pin_init(void){
 //	GPIO_PinAFConfig(GPIOA, GPIO_PinSource1, GPIO_AF_1);
     
 }
-
-
 void TIM_Config(void)
 {
     GPIO_PinAFConfig(GPIOA, GPIO_PinSource0, GPIO_AF_1);
@@ -209,23 +250,4 @@ void TIM_Config(void)
     TIM_GenerateEvent(TIM12, TIM_EventSource_Update);
     TIM_Cmd(TIM12, ENABLE);
 }
-void modulateArm(uint32_t i){
-        TIM12->CCR1 = i;
-//    static TIM_OCInitTypeDef TIM_OCInitStructure;
-//    TIM_OCInitStructure.TIM_Pulse = i;
-//    TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-//    TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-//    TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-//    TIM_OC1Init(TIM12, &TIM_OCInitStructure);
 
-}
-void modulatePick(uint32_t i){
-    TIM12->CCR2 = i;
-//    static TIM_OCInitTypeDef TIM_OCInitStructure;
-//    TIM_OCInitStructure.TIM_Pulse = i;
-//    TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1;
-//    TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
-//    TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
-//    TIM_OC2Init(TIM12, &TIM_OCInitStructure);
-    
-}

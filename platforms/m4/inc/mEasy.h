@@ -16,12 +16,14 @@
 #include "stm32f37x.h"
 
 void set_gpio(GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin,int a);
+void set_pwm_servo (uint16_t Per,uint16_t Pul,uint16_t PreScale);
+void set_pwm_stepper (uint16_t Per,uint16_t Pul,uint16_t PreScale);
+void modulatePick(uint32_t i);
+void modulateArm(uint32_t i);
 
-void set_pwm (uint16_t Per,uint16_t Pul,uint16_t PreScale);
 void G_interrupt(void);
 void pin_init(void);
 void TIM_Config(void);
-void modulatePick(uint32_t i);
-void modulateArm(uint32_t i);
+
 
 //#endif

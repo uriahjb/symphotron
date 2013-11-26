@@ -23,6 +23,7 @@ static uint8_t acknowledgmentMode = AF_MAC_ACK; //MAC or APS, final or intermedi
 uint32_t timeFromChipSelectToSrdyLow = 0;
 uint32_t timeWaitingForSrsp = 0;
 uint8_t zAddr = 0x5E;
+volatile int IsCoordinator=0;
 
 const struct moduleConfiguration DEFAULT_MODULE_CONFIGURATION_COORDINATOR = {
     COORDINATOR,
@@ -121,6 +122,10 @@ static uint8_t zRfPower(uint8_t productId)
 }
 uint8_t zInit(uint8_t slaveAddr, const struct moduleConfiguration* mc)
 {
+    
+    if(mc->deviceType == COORDINATOR)
+        IsCoordinator=1;
+    
     EXTI_InitTypeDef   EXTI_InitStructure;
     GPIO_InitTypeDef   GPIO_InitStructure;
     NVIC_InitTypeDef   NVIC_InitStructure;
@@ -176,6 +181,7 @@ uint8_t zInit(uint8_t slaveAddr, const struct moduleConfiguration* mc)
     if(temp!=MODULE_SUCCESS)
         return temp;
     if(mc->deviceType == COORDINATOR)
+        
         zLed(zON, LED0);
     else if(mc->deviceType == ROUTER)
         zLed(zON, LED1);
@@ -263,6 +269,7 @@ uint8_t zMacAddr(uint16_t shortAddress, uint8_t requestType, uint8_t startIndex)
     #define ZDO_IEEE_ADDR_RSP_TIMEOUT 10
     RETURN_RESULT_IF_FAIL(zWaitForMsg(ZDO_IEEE_ADDR_RSP, ZDO_IEEE_ADDR_RSP_TIMEOUT), METHOD_ZDO_IEEE_ADDR_RSP);
     RETURN_RESULT(zmBuf[ZDO_IEEE_ADDR_RSP_STATUS_FIELD], METHOD_ZDO_IEEE_ADDR_RSP);
+    
 }
 uint8_t zShortAddr(uint8_t* ieeeAddress, uint8_t requestType, uint8_t startIndex)
 {
@@ -276,10 +283,16 @@ uint8_t zShortAddr(uint8_t* ieeeAddress, uint8_t requestType, uint8_t startIndex
     zmBuf[11] = requestType;
     zmBuf[12] = startIndex;
     
-    RETURN_RESULT_IF_FAIL(zSendMessage(), METHOD_ZDO_NWK_ADDR_REQ);     
+    
+    
+
+    RETURN_RESULT_IF_FAIL(zSendMessage(), METHOD_ZDO_NWK_ADDR_REQ);
     #define ZDO_NWK_ADDR_RSP_TIMEOUT 10
     RETURN_RESULT_IF_FAIL(zWaitForMsg(ZDO_NWK_ADDR_RSP, ZDO_NWK_ADDR_RSP_TIMEOUT), METHOD_ZDO_NWK_ADDR_RSP);
     RETURN_RESULT(zmBuf[ZDO_NWK_ADDR_RSP_STATUS_FIELD], METHOD_ZDO_NWK_ADDR_RSP);
+    
+    
+    
 }
 uint8_t zTx(uint16_t destinationShortAddress, uint8_t* data, uint8_t dataLength)
 {
@@ -311,7 +324,7 @@ uint8_t zRx(uint8_t* data, volatile uint8_t* dataLength)
     zGetMessage();
     if (zmBuf[SRSP_LENGTH_FIELD] > 13)
     {
-        zHexPrintf(zmBuf, (zmBuf[SRSP_LENGTH_FIELD] + SRSP_HEADER_SIZE));
+//        zHexPrintf(zmBuf, (zmBuf[SRSP_LENGTH_FIELD] + SRSP_HEADER_SIZE));
         *dataLength = zmBuf[19];
         memcpy(data, zmBuf+20, zmBuf[19]);
         //zHexPrintf(zmBuf, (zmBuf[SRSP_LENGTH_FIELD] + SRSP_HEADER_SIZE));
@@ -591,36 +604,50 @@ void zRadioON(void)
 {
     zGPIOstate |= resetPin;
     mBusWrite(zAddr,zGPIOwr,zGPIOstate);
+    if(IsCoordinator)
+      mWait(2000);
 }
 void zRadioOFF(void)
 {
     zGPIOstate &= (~resetPin);
     mBusWrite(zAddr,zGPIOwr,zGPIOstate);
+    if(IsCoordinator)
+      mWait(2000);
 }
 void zSSclear(void)
 {
     zGPIOstate &= (~zSs);
     mBusWrite(zAddr,zGPIOwr,zGPIOstate);
+    if(IsCoordinator)
+      mWait(2000);
 }
 void zSSset(void)
 {
     zGPIOstate |= (zSs);
     mBusWrite(zAddr,zGPIOwr,zGPIOstate);
+    if(IsCoordinator)
+      mWait(2000);
 }
 void zPinkon(void)
 {
     zGPIOstate&=(~pinkPin);
     mBusWrite(zAddr,zGPIOwr,zGPIOstate);
+    if(IsCoordinator)
+      mWait(2000);
 }
 void zPinkoff(void)
 {
     zGPIOstate|=pinkPin;
     mBusWrite(zAddr,zGPIOwr,zGPIOstate);
+    if(IsCoordinator)
+      mWait(2000);
 }
 void zPinktoggle(void)
 {
     zGPIOstate^=pinkPin;
     mBusWrite(zAddr,zGPIOwr,zGPIOstate);
+    if(IsCoordinator)
+      mWait(2000);
 }
 void zPink(uint8_t val)  
 {

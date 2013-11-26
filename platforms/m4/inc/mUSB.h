@@ -8,7 +8,6 @@
 
 #ifndef __m_usb
 #define __m_usb
-
 #include "mGeneral.h"
 #include "usb_lib.h" 
 #include <sys/stat.h> 
@@ -101,10 +100,6 @@ typedef enum _DEVICE_STATE
 /* External variables --------------------------------------------------------*/
 extern  __IO uint32_t bDeviceState; /* USB device status */
 extern __IO bool fSuspendEnabled;  /* true when suspend is possible */
-
-extern uint8_t Receive_Buffer[64];
-extern uint32_t Receive_length;
-
 
 
 /* Exported functions ------------------------------------------------------- */

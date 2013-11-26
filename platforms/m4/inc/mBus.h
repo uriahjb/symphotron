@@ -1,4 +1,4 @@
-//-----------------------------------------------------------------------------
+ //-----------------------------------------------------------------------------
 // MAEVARM M4 STM32F373 mBus 
 // version: 1.0
 // date: March 22, 2013
@@ -7,10 +7,6 @@
 
 #ifndef __m_bus
 #define __m_bus
-
-#ifdef __cplusplus
-extern "C" {
-#endif 
 
 #include "mGeneral.h"
 
@@ -50,9 +46,5 @@ uint32_t CPAL_TIMEOUT_UserCallback(CPAL_InitTypeDef* pDevInitStruct);
 void CPAL_I2C_DMARXTC_UserCallback(CPAL_InitTypeDef* pDevInitStruct);
 //void CPAL_I2C_DMARXHT_UserCallback(CPAL_InitTypeDef* pDevInitStruct);
 //void CPAL_I2C_DMARXTE_UserCallback(CPAL_InitTypeDef* pDevInitStruct);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

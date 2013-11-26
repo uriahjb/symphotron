@@ -8,10 +8,6 @@
 #ifndef __m_general
 #define __m_general
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 //-----------------------------------------------------------------------------
 // Standard Peripheral Libraries that we'll need at times:
 //-----------------------------------------------------------------------------
@@ -139,8 +135,6 @@ extern "C" {
 // -----------------------------------------------------------------------------
 void mInit(void); 
 
-#ifdef __cplusplus
-}
-#endif
+
 
 #endif

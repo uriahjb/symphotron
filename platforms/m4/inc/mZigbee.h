@@ -10,10 +10,6 @@
 
 #ifndef m_zigbee__
 #define m_zigbee__
-
-#ifdef __cplusplus
-extern "C" {
-#endif 
 //#include "mGeneral.h"
 
 #define zIntDisable  NVIC_DisableIRQ(EXTI15_10_IRQn)
@@ -461,9 +457,5 @@ void zVersionPrintf(void);
 uint8_t zNwkConfigPrintf(void);
 uint8_t zDevInfoPrintf(void);
 void zHexPrintf(uint8_t* toPrint, uint16_t numBytes);
-
-#ifdef __cplusplus
-}
-#endif 
 
 #endif
