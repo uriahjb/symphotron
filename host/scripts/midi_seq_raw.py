@@ -5,7 +5,7 @@ At the moment this assumes that the tempo is fixed
   - ie: doesn't look for tempo change events
 '''
 
-import sys
+import sys, getopt
 from time import time as now 
 import serial
 
@@ -28,11 +28,32 @@ def encode_midi_event(event):
         raise ValueError, "Unknown MIDI Event: " + str(event)
     return ret
 
-# Set up serial
-ser = serial.Serial('/dev/tty.usbmodem1411')
+try:
+  opts, args = getopt.getopt(sys.argv[1:],"h:i:f:",["iface=","file="])
+except getopt.GetoptError:
+  print 'midi_raw_seq.py -i </dev/tty...> -f <midi_file>'
+  sys.exit(2)
 
-# Load in midi file
+# Default filename
+iface = None
 filename = 'mary.mid'
+for opt, arg in opts:
+      if opt == '-h':
+        print 'midi_raw_seq.py -i </dev/tty...> -f <midi_file>'
+        sys.exit()
+      elif opt in ("-i", "--iface"):
+         iface = arg
+      elif opt in ("-f", "--file"):
+         filename = arg
+
+if iface is None:
+  print 'midi_raw_seq.py -i </dev/tty...> -f <midi_file>'
+  sys.exit()
+
+# Set up serial
+#ser = serial.Serial('/dev/tty.usbmodem1421')
+ser = serial.Serial(iface)
+
 pattern = read_midifile(filename)
 
 # Convert event ticks into absolute times
@@ -45,7 +66,8 @@ for track in pattern:
 events.sort()
 
 # Convert bpm to ms_per_tick
-bpm = 120
+#bpm = 120
+bpm = 240
 tempo = int(float(6e7) / bpm) / 1000
 ms_per_tick = tempo/float(pattern.resolution)
 
