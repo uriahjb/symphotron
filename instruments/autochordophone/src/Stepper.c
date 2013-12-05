@@ -8,40 +8,6 @@
 #include <math.h>
 #include "arm_math.h"
 
-// Enable/Disable
-int m_en;
-int m_dir;
-// State variables
-float m_speed;
-int32_t m_cnt;
-// Step Mode
-uint8_t m_mode;
-// Speed and acceleration limits
-float m_acceleration_limit;
-float m_speed_min;
-float m_speed_max;
-
-// Desired Position
-int32_t m_desired_position;
-
-int m_nxt_update;
-int m_update_cnt;
-
-//Error
-float error;
-float error_dir;
-
-//Switch
-int com1;
-int com2;
-//flag
-int flag;
-int Aflag;
-int accel;
-float acceleration;
-float t;
-float dec_dist;
-
 void stepper_setup(void){
     set_gpio(GPIOA,GPIO_Pin_8,MODE_OUT); //Mode 2 Pin
     set_gpio(GPIOA,GPIO_Pin_9,MODE_OUT); //Mode 1 Pin
@@ -102,10 +68,10 @@ void setMode( int mode ) {
             break;
     }
 }
-void Start( void ) {
+void start( void ) {
     TIM_Cmd(TIM2, ENABLE);
 }
-void Stop( void ) {
+void stop( void ) {
     TIM_Cmd(TIM2, DISABLE);
 }
 void accStart(void){
@@ -187,11 +153,11 @@ int update( int16_t Note ) {
     }
     switch(com1){
         case 1:
-            Stop();
+            stop();
             return(1);
             break;
         case 2:
-            Start();
+            start();
             set_direction(error_dir);
             acceleration=getAccelerationLimit();
             t = m_speed/acceleration;
@@ -244,4 +210,3 @@ void TIM4_IRQHandler(void)
     }
     TIM_ClearFlag(TIM4,TIM_FLAG_CC1);
 }
-

@@ -1,29 +1,41 @@
-# Location of symphotron libs ... remember to update this for 
-# your machine
-SYMPHOTRON = /Users/tylerbarkin/Documents/UPenn/Reactive_Spaces/git/symphotron
+#------------------------------------------------------------------------------
+# MAEVARM M4 STM32F373
+# version: 1.0
+# date: March 25, 2013
+# author: Neel Shah (neels@seas.upenn.edu)
+# description: Makefile for compilation of main code
+#			   Auto detection of OS, tested with OSX, Ubuntu and Windows
+#			   Auto find and addition of source files for compilation
+#			   Multi Thread compilation by default for faster compilation
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+# --> DON'T EDIT THIS FILE <--  
+#------------------------------------------------------------------------------
+
+MAKEFLAGS = -j --no-print-directory
 
 PROJNAME  = main
 BUILDDIR  = obj
-INCDIR    = $(SYMPHOTRON)/platforms/m4/inc
-LIBDIR    = $(SYMPHOTRON)/platforms/m4/lib
-#COMDIR    = ../../../c_common
-COMDIR    = $(SYMPHOTRON)/platforms/m4/src
-CPPCOMDIR = $(SYMPHOTRON)/utils/midi_parser
-SOURCEDIR = $(SYMPHOTRON)/platforms/m4/src
-ARMDIR   := arm
-CPALDIR  := cpal
-DSPDIR   := dsp
-STDIR    := st
-USBDIR   := usb
-M4DIR    := m4
-USERDIR  := user_lib
-INC = inc
-CURDIR = $(shell pwd)
+INCDIR    = inc
+LIBDIR    = lib
+SOURCEDIR = src
 
+ARMDIR   = arm
+CPALDIR  = cpal
+DSPDIR   = dsp
+STDIR    = st
+USBDIR   = usb
+
+ifeq ($(OS),Windows_NT)
+	UNAME := Windows
+	SHELL=c:/windows/system32/cmd.exe
+else
+    UNAME := $(shell uname -s)
+endif
 
 ARCH = arm-none-eabi
 CC = $(ARCH)-gcc
-CXX = $(ARCH)-g++
 LD = $(ARCH)-ld
 AS = $(ARCH)-as
 SZ = $(ARCH)-size
@@ -31,136 +43,124 @@ OBJCPY = $(ARCH)-objcopy
 OBJDMP = $(ARCH)-objdump
 
 LDSCRIPT = $(LIBDIR)/$(STDIR)/STM32_FLASH.ld
-STARTUP  = $(LIBDIR)/$(STDIR)/startup_stm32f37x.s
+STARTUP  = $(LIBDIR)/$(STDIR)/startup_stm32f37x.s 
 
-# compiler includes
-INCLUDES = -I$(CURDIR)/inc
-INCLUDES += -I$(INCDIR) -I$(LIBDIR)/$(ARMDIR) -I$(LIBDIR)/$(CPALDIR)/$(INC)
-INCLUDES += -I$(LIBDIR)/$(USERDIR)/$(INC) -I$(LIBDIR)/$(M4DIR)/$(INC)
-INCLUDES += -I$(LIBDIR)/$(STDIR)/$(INC) -I$(LIBDIR)/$(USBDIR)/$(INC)
-INCLUDES += -I$(COMDIR)/$(USERDIR)/$(INC)
-INCLUDES += -I$(CPPCOMDIR)
+CFLAGS  = -g -Os -std=c99
+CFLAGS += -mlittle-endian -mthumb -mcpu=cortex-m4 
+CFLAGS += -mfpu=fpv4-sp-d16 -mfloat-abi=hard
+CFLAGS += -ffunction-sections -fdata-sections -nostartfiles
+CFLAGS += -specs=nano.specs
+CFLAGS += -I$(INCDIR) -I$(LIBDIR)/$(ARMDIR) -I$(LIBDIR)/$(CPALDIR)/$(INCDIR)
+CFLAGS += -I$(LIBDIR)/$(STDIR)/$(INCDIR) -I$(LIBDIR)/$(USBDIR)/$(INCDIR)
+CFLAGS += -DARM_MATH_CM4 -D'__FPU_PRESENT=1' -DM4 -DM4_WHITE
+#CFLAGS += -DUSE_STDPERIPH_DRIVER
+#CFLAGS += -mthumb-interwork
 
-# base compiler flags (common for CC and CXX and linking)
-BFLAGS = -O2 -Wall
-BFLAGS += -mlittle-endian -mthumb -mcpu=cortex-m4
-BFLAGS += -DARM_MATH_CM4 -D'__FPU_PRESENT=1'
-BFLAGS += -mfpu=fpv4-sp-d16 -mfloat-abi=hard
-BFLAGS += -DHSE_VALUE=16000000UL # is this needed/used?
-BFLAGS += -fno-common -fno-exceptions -ffunction-sections -fdata-sections
-BFLAGS += -ffast-math
-#BFLAGS += -flto ... looks like link time optimization breaks with this setup :(
-
-# CC-specific compiler flags (not linking!)
-CFLAGS = -std=c99
-
-# CXX-specific compiler flags (not linking!)
-CXXFLAGS =
-
-# linker-specific flags
-LDFLAGS = --static -Wl,--gc-sections
+LDFLAGS  = $(CFLAGS)
+LDFLAGS += --static -Wl,--gc-sections
 LDFLAGS += -Wl,-Map,$(BUILDDIR)/$(PROJNAME).map
-LDFLAGS += -T$(LDSCRIPT)
-LDFLAGS += -lm -lnosys
-LDFLAGS += -specs=nano.specs -u _printf_float # If size if an issue
+LDFLAGS += -nostartfiles -T$(LDSCRIPT)
 
-AFLAGS  = -mlittle-endian -mthumb -mcpu=cortex-m4
+AFLAGS  = -mlittle-endian -mthumb -mcpu=cortex-m4 
 ODFLAGS	= -x --syms
 CPFLAGS = --output-target=binary
 
-# collect list of C source files
-_CSRCS = $(wildcard $(CURDIR)/src/*.c)
-_CSRCS += $(wildcard $(SOURCEDIR)/*.c)
-_CSRCS += $(wildcard $(LIBDIR)/$(CPALDIR)/*/*.c)
-_CSRCS += $(wildcard $(LIBDIR)/$(DSPDIR)/*/*.c)
-_CSRCS += $(wildcard $(LIBDIR)/$(STDIR)/*/*.c)
-_CSRCS += $(wildcard $(LIBDIR)/$(USBDIR)/*/*.c)
-_CSRCS += $(wildcard $(LIBDIR)/$(M4DIR)/*/*.c)
-_CSRCS += $(wildcard $(LIBDIR)/$(USERDIR)/*/*.c)
-_CSRCS += $(wildcard $(COMDIR)/$(USERDIR)/*/*.c)
-CSRCS = $(notdir $(_CSRCS))
-CSRCS += startup_stm32f37x.s
+_SRCS = $(wildcard $(SOURCEDIR)/*.c)
+_SRCS += $(wildcard *.c)
+SRCS = $(notdir $(_SRCS))
+SRCS += startup_stm32f37x.s
 
-# collect list of C++ source files
-_CXXSRCS += $(wildcard $(SOURCEDIR)/inc/*.cpp)
-#_CXXSRCS += $(wildcard $(CPPCOMDIR)/$(USERDIR)/*/*.cpp)
-_CXXSRCS += $(wildcard $(CPPCOMDIR)/*.cpp)
-_CXXSRCS += $(wildcard $(CURDIR)/*.cpp)
-CXXSRCS = $(notdir $(_CXXSRCS))
+_OBJS = $(patsubst %.c,$(BUILDDIR)/%.o,$(SRCS))
+OBJS = $(patsubst %.s,$(BUILDDIR)/%.o,$(_OBJS))
 
-# collect list of C objects
-_COBJS = $(patsubst %.c,$(BUILDDIR)/%.o,$(CSRCS))
-COBJS = $(patsubst %.s,$(BUILDDIR)/%.o,$(_COBJS))
-
-# collect list of C++ objects
-_CXXOBJS = $(patsubst %.cpp,$(BUILDDIR)/%.o,$(CXXSRCS))
-CXXOBJS = $(patsubst %.s,$(BUILDDIR)/%.o,$(_CXXOBJS))
-
-VPATH := $(sort $(dir $(_CSRCS) $(_CXXSRCS)))
-
+ifeq ($(UNAME),Windows)
+_OBJSW = $(patsubst %.c,%.o,$(SRCS))
+OBJSW = $(patsubst %.s,%.o,$(_OBJSW))
+endif
 #------------------------------------------------------------------------------
-.PHONY: proj disassemble serialflash flash clean cleanlib
+
+.PHONY: $(LIBDIR)/$(BUILDDIR)/libstm32f37x.a all clean disassemble flash cleanlib run proj
 
 all: proj
 ifeq ($(UNAME),Windows)
 	@$(SZ) $(BUILDDIR)/$(PROJNAME).elf
-else
-	@$(SZ) $(BUILDDIR)/$(PROJNAME).elf | tail -n 1 | awk '{print "Flash:\t", $$1+$$2, "\t[",($$1+$$2)*100/(128*1024),"% ]", "\nRAM:\t", $$2+$$3, "\t[",($$2+$$3)*100/(24*1024),"% ]"}'
+else	
+	@$(SZ) $(BUILDDIR)/$(PROJNAME).elf | tail -n 1 | awk '{print "Flash:\t", $$1+$$2, "\t[",($$1+$$2)*100/(256*1024),"% ]", "\nRAM:\t", $$2+$$3, "\t[",($$2+$$3)*100/(32*1024),"% ]"}'
 endif
-	@echo "[>--BinaryGenerated--<]"
-
-proj: $(BUILDDIR)/$(PROJNAME).elf
-
-$(BUILDDIR)/$(PROJNAME).elf: $(COBJS) $(CXXOBJS)
-	@echo "  [ELF] $@"
-	@$(CXX) $(BFLAGS) $(CFLAGS) $(COBJS) $(CXXFLAGS) $(CXXOBJS) $(CXXFLAGS) -o $@ $(LDFLAGS)
-	@$(OBJCPY) $(CPFLAGS) $(BUILDDIR)/$(PROJNAME).elf $(BUILDDIR)/$(PROJNAME).bin
-
-disassemble: proj
-	@$(OBJDMP) $(ODFLAGS) $(BUILDDIR)/$(PROJNAME).elf > $(BUILDDIR)/$(PROJNAME).dmp
-	@$(OBJDMP) -dS $(BUILDDIR)/$(PROJNAME).elf > $(BUILDDIR)/$(PROJNAME).dis
-
-$(COBJS): | $(BUILDDIR)
-
-$(CXXOBJS): | $(BUILDDIR)
-
-$(BUILDDIR):
-ifeq ($(OS),Windows_NT)
-	@If Not Exist "$(BUILDDIR)" (mkdir "$(BUILDDIR)")
+	@echo "[>------BinaryGenerated------<]" 
+	
+$(LIBDIR)/$(BUILDDIR)/libstm32f37x.a:
+	@echo "[>----Library Compilation----<]"
+	@$(MAKE) -C $(LIBDIR)
+ifeq ($(UNAME),Windows)
+	@If Not Exist "$(CURDIR)/$(BUILDDIR)" (mkdir "$(CURDIR)/$(BUILDDIR)")
 else
 	@mkdir -p $(BUILDDIR)
 endif
+	@echo "[>------CodeCompilation------<]"
 
+proj: $(BUILDDIR)/$(PROJNAME).elf
+	
+
+$(BUILDDIR)/$(PROJNAME).elf: $(LIBDIR)/$(BUILDDIR)/libstm32f37x.a $(OBJS)
+	@$(CC) $(LDFLAGS) $^ -o $@ -L$(LIBDIR)/$(BUILDDIR) -lstm32f37x
+	@$(OBJCPY) $(CPFLAGS) $(BUILDDIR)/$(PROJNAME).elf $(BUILDDIR)/$(PROJNAME).bin
+ifeq ($(UNAME),Windows)
+	@$(OBJCPY) --output-target=ihex $(BUILDDIR)/$(PROJNAME).elf $(BUILDDIR)/$(PROJNAME).hex
+endif
+
+disassemble: all
+	@$(OBJDMP) $(ODFLAGS) $(BUILDDIR)/$(PROJNAME).elf > $(BUILDDIR)/$(PROJNAME).dmp
+	@$(OBJDMP) -dS $(BUILDDIR)/$(PROJNAME).elf > $(BUILDDIR)/$(PROJNAME).dis
+
+$(BUILDDIR)/%.o: $(SOURCEDIR)/%.c
+	@$(CC) $(CFLAGS) -c -o $@ $<
 $(BUILDDIR)/%.o: %.c
-	@echo "  [CC]  $^"
-	@$(CC) $(INCLUDES) $(BFLAGS) $(CFLAGS) -c -o $@ $^
-
-$(BUILDDIR)/%.o: %.cpp
-	@echo "  [CXX] $^"
-	@$(CXX) $(INCLUDES) $(BFLAGS) $(CXXFLAGS) -c -o $@ $^
+	@$(CC) $(CFLAGS) -c -o $@ $<
 
 $(BUILDDIR)/startup_stm32f37x.o: $(STARTUP)
-	@$(AS) $(AFLAGS) $(STARTUP) -o $@
-
-serialflash: all
-	@echo "[>-Downloading to M4-<]"
-	@./extra/stm32loader.py -p $(PORT) -evw "$(BUILDDIR)/$(PROJNAME).bin"
-
-flash: all
-	@echo "[>-Downloading to M4-<]"
-ifeq ($(OS),Windows_NT)
-	@"../../../tools/dfu-util/dfu-util" -d 0483:df11 -a 0 -s 0x08000000 -D "$(BUILDDIR)/$(PROJNAME).bin"
+ifeq ($(UNAME),Windows)
+	@$(AS) $(AFLAGS) "$(CURDIR)/$(STARTUP)" -o "$(CURDIR)/$@"
 else
-	@ls -l $(BUILDDIR)/$(PROJNAME).bin
-	@sudo dfu-util -d 0483:df11 -a 0 -s 0x08000000 -D "$(BUILDDIR)/$(PROJNAME).bin"
+	@$(AS) $(AFLAGS) $(STARTUP) -o $@
 endif
-	@echo "[>-----M4 Loaded-----<]"
+	
+flash: all
+	@echo "[>-----Downloading to M4-----<]"
+ifeq ($(UNAME),Windows)
+	@dfu-util -d 0483:df11 -a 0 -s 0x08000000 -D "$(CURDIR)/$(BUILDDIR)/$(PROJNAME).bin"
+endif
+ifeq ($(UNAME),Linux)
+	@sudo dfu-util -d 0483:df11 -a 0 -s 0x08000000 -D $(BUILDDIR)/$(PROJNAME).bin
+endif
+ifeq ($(UNAME),Darwin)
+	@dfu-util -d 0483:df11 -a 0 -s 0x08000000 -D $(BUILDDIR)/$(PROJNAME).bin
+endif
+	@echo "[>---------M4 Loaded---------<]"  
+
+run: all
+	@echo "[>-----Downloading to M4-----<]"
+ifeq ($(UNAME),Windows)
+	@dfu-util -d 0483:df11 -a 0 -s 0x08000000:leave -D "$(CURDIR)/$(BUILDDIR)/$(PROJNAME).bin"
+endif
+ifeq ($(UNAME),Linux)
+	@sudo dfu-util -d 0483:df11 -a 0 -s 0x08000000:leave -D $(BUILDDIR)/$(PROJNAME).bin
+endif
+ifeq ($(UNAME),Darwin)
+	@dfu-util -d 0483:df11 -a 0 -s 0x08000000:leave -D $(BUILDDIR)/$(PROJNAME).bin
+endif
+	@echo "[>---------M4 Loaded---------<]"
 
 clean:
-ifeq ($(OS),Windows_NT)
-	@If Exist "$(BUILDDIR)" rd /S /Q $(BUILDDIR)
+ifeq ($(UNAME),Windows)
+	@erase $(OBJSW) /s 
+	@erase $(PROJNAME).dmp $(PROJNAME).dis $(PROJNAME).elf $(PROJNAME).hex $(PROJNAME).bin /s
 else
-	@rm -fr $(BUILDDIR)
+	@rm -f $(BUILDDIR)/*.o $(BUILDDIR)/*.lst $(BUILDDIR)/*.map $(BUILDDIR)/*.dmp $(BUILDDIR)/*.dis \
+	$(BUILDDIR)/$(PROJNAME).elf $(BUILDDIR)/$(PROJNAME).hex $(BUILDDIR)/$(PROJNAME).bin
 endif
+	
+cleanlib: clean
+	@$(MAKE) clean -C lib 
 
 #------------------------------------------------------------------------------

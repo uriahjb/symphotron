@@ -4,9 +4,6 @@
  */
 //#include "mbed.h"
 
-#ifndef STEPPER_H
-#define STEPPER_H
-
 // Modes
 #include "mEasy.h"
 #include <stdlib.h>
@@ -30,8 +27,8 @@ void set_speed(uint16_t speed);
 
 
 void Stepper( void );
-void Start( void );
-void Stop( void );
+void start( void );
+void stop( void );
 void accStart(void);
 void accStop(void);
 void updateCount(void);
@@ -52,7 +49,37 @@ void setPosition( int32_t desired_position );
 int update( int16_t Note);
 void Arrived(void);
 
-extern float m_speed_min;
-extern float m_speed_max;
+// Enable/Disable
+int m_en;
+int m_dir;
+// State variables
+float m_speed;
+int32_t m_cnt;
+// Step Mode
+uint8_t m_mode;
+// Speed and acceleration limits
+float m_acceleration_limit;
+float m_speed_min;
+float m_speed_max;
 
-#endif
+// Desired Position
+int32_t m_desired_position;
+
+int m_nxt_update;
+int m_update_cnt;
+
+//Error
+float error;
+float error_dir;
+
+//Switch
+int com1;
+int com2;
+//flag
+int flag;
+int Aflag;
+int accel;
+float acceleration;
+float t;
+float dec_dist;
+
