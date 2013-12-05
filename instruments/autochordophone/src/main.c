@@ -111,7 +111,7 @@ int main( void )
     accStop();
     
     
-    strum_delay(1);
+    //strum_delay(1);
     while(1)
     {
         //        test = update(pos);
@@ -131,148 +131,37 @@ int main( void )
             usbIfacePrintf(&usb, "data[0] %02x\n",msg.data[0]);
             usbIfacePrintf(&usb, "data[1] %02x\n\n",msg.data[1]);
             if(msg.status==NOTE_ON){
-                //                strum();
                 Sflag=1;
-                i++;
-                if(i%2==0){
-                    set_direction(1);
-                }else{
-                    set_direction(0);
-                }
                 switch(msg.data[0]){
-                    case 52:
-                        set_freq(165);
-                        break;
-                    case 53:
-                        set_freq(174);
-                        break;
-                    case 54:
-                        set_freq(185);
-                        break;
-                    case 55:
-                        set_freq(196);
-                        break;
-                    case 56:
-                        set_freq(207);
-                        break;
                     case 57:
-                        //                        pos=A3;
-                        set_freq(220);
-                        break;
-                    case 58 :
-                        set_freq(233);
+                        pos=A3;
                         break;
                     case 59:
-                        //                        pos=B3;
-                        set_freq(246);
+                        pos=B3;
                         break;
                     case 60:
-                        //                        pos=C4;
-                        set_freq(261);
-                        break;
-                    case 61:
-                        set_freq(277);
+                        pos=C4;
                         break;
                     case 62:
-                        //                        pos=D4;
-                        set_freq(294);
-                        break;
-                    case 63 :
-                        set_freq(311);
+                        pos=D4;
                         break;
                     case 64:
-                        //                        pos=E4;
-                        set_freq(330);
+                        pos=E4;
                         break;
-                    case 65:
-                        //                        pos=F4;
-                        set_freq(350);
+                        pos=F4;
                         break;
                     case 67:
-                        //                        pos=G4;
-                        set_freq(392);
-                        break;
-                    case 68:
-                        set_freq(415);
+                        pos=G4;
                         break;
                     case 69:
-                        //                        pos=A4;
-                        set_freq(440);
-                        break;
-                    case 70:
-                        set_freq(466);
+                        pos=A4;
                         break;
                     case 71:
-                        //                        pos=B4;
-                        set_freq(493);
+                        pos=B4;
                         break;
                     case 72:
-                        //                        pos=C5;
-                        set_freq(523);
+                        pos=C5;
                         break;
-                    case 73:
-                        set_freq(554);
-                        break;
-                    case 74:
-                        set_freq(587);
-                        break;
-                    case 75:
-                        set_freq(622);
-                        break;
-                    case 76:
-                        set_freq(660);
-                        break;
-                    case 77:
-                        set_freq(698);
-                        break;
-                    case 78:
-                        set_freq(740);
-                        break;
-                    case 79:
-                        set_freq(783);
-                        break;
-                    case 80:
-                        set_freq(830);
-                        break;
-                    case 81:
-                        set_freq(880);
-                        break;
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-//                    case 57:
-//                        pos=A3;
-//                        break;
-//                    case 59:
-//                        pos=B3;
-//                        break;
-//                    case 60:
-//                        pos=C4;
-//                        break;
-//                    case 62:
-//                        pos=D4;
-//                        break;
-//                    case 64:
-//                        pos=E4;
-//                        break;
-//                        pos=F4;
-//                        break;
-//                    case 67:
-//                        pos=G4;
-//                        break;
-//                    case 69:
-//                        pos=A4;
-//                        break;
-//                    case 71:
-//                        pos=B4;
-//                        break;
-//                    case 72:
-//                        pos=C5;
-//                        break;
                     default:
                         break;
                 }
@@ -281,20 +170,6 @@ int main( void )
         usbIfaceWriteBytes(&usb);
         
     }
-    
-    //        test = update(pos[test2]);
-    //        if(test==1){
-    //             mRedOFF;
-    //            strum_speed(1-i/11);
-    //            test2++;
-    //            i++;
-    //
-    ////            mWaitms(100);
-    //        }
-    //        if(test2>=11){
-    //            test2=11;
-    //            mWhiteON;
-    
 }
 
 
