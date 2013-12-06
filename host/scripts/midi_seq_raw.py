@@ -90,12 +90,13 @@ while len(events):
     print evt, hxstr, curtime
 print "Sequencing Complete"
 
-
+'''
 while True:
   data = ser.readline()
   if data == '':
     break
   print repr(data)
+'''
 
 
 
