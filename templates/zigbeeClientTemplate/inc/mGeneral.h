@@ -93,12 +93,12 @@
 #define mBlueTOGGLE		GPIOB->ODR ^= (1<<15)
 
 #ifdef M4_WHITE
-#define mWhiteOFF		GPIOD->BRR  = (1<<8)
-#define mWhiteON		GPIOD->BSRR = (1<<8)
+#define mWhiteON		GPIOD->BRR  = (1<<8)
+#define mWhiteOFF		GPIOD->BSRR = (1<<8)
 #define mWhiteTOGGLE	GPIOD->ODR ^= (1<<8)
 #else
-#define mWhiteOFF		GPIOD->BSRR = (1<<8)
-#define mWhiteON		GPIOD->BRR  = (1<<8)
+#define mWhiteON		GPIOD->BSRR = (1<<8)
+#define mWhiteOFF		GPIOD->BRR  = (1<<8)
 #define mWhiteTOGGLE	GPIOD->ODR ^= (1<<8)
 #endif
 

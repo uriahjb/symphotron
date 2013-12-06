@@ -21,12 +21,24 @@
 #include "zigbee_interface.h"
 #define debug 1
 
+// usb for debugging
+#include "bqueue.h"
+#include "usb_iface.h" 
+
 // main function
 int main(void)
 { 
   mInit();
-  USART_Config();
+  mUSBInit();
   InitPeripherals();  // configure GPIO, USB, I2C, ect based on peripherals.h
+
+  // Set up usb interface
+  bQueue in_q;
+  bQueue out_q;
+  bQueueInit( &in_q );
+  bQueueInit( &out_q );
+  usbIface usb;
+  usbIfaceInit( &usb, &in_q, &out_q );
 
   mWhiteON;
   // Initialize Zigbee interface object
@@ -39,18 +51,27 @@ int main(void)
 
   while(1)
   {
-
+    // Read bytes in from zigbee
     GetZigbeeBytes(&zigbee_interface);
+
     if ( PeekZigbeePacket(&zigbee_interface, &received_zigbee_data, &received_zigbee_length) ) {
-      mYellowTOGGLE;
+      mGreenTOGGLE;
       // All message types should just be the midi message 
       uint8_t type = received_zigbee_data[0];
       MsgMidi* msg = (MsgMidi*)(received_zigbee_data+1);
+      
+      // When we get a message print it back over usb for debugging
+      usbIfacePrintf(&usb, "status  %02x\n",msg->status);
+      usbIfacePrintf(&usb, "channel %02x\n",msg->channel);
+      usbIfacePrintf(&usb, "data[0] %02x\n",msg->data[0]);
+      usbIfacePrintf(&usb, "data[1] %02x\n\n",msg->data[1]);
 
       // Do some things like set desired note, etc ...
-
       DropZigbeePacket(&zigbee_interface);
     }
+
+    // Write data out of usb tx buffer 
+    usbIfaceWriteBytes( &usb );
   }
   
   return(0);

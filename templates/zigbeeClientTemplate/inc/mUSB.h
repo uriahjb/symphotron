@@ -101,6 +101,8 @@ typedef enum _DEVICE_STATE
 extern  __IO uint32_t bDeviceState; /* USB device status */
 extern __IO bool fSuspendEnabled;  /* true when suspend is possible */
 
+extern uint8_t Receive_Buffer[64];
+extern uint32_t Receive_length;
 
 /* Exported functions ------------------------------------------------------- */
 extern const uint8_t Virtual_Com_Port_DeviceDescriptor[VIRTUAL_COM_PORT_SIZ_DEVICE_DESC];

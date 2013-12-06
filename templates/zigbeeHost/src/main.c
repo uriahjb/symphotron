@@ -20,7 +20,6 @@
     Reads in midi messages over usb and forwards them over zigbee
 */
 
-
 #include "stm32f37x.h"
 #include "mGeneral.h"
 #include "common_peripherals.h"
@@ -71,24 +70,31 @@ int main(void)
   // main loop
   while(1)
   {
-      // Read data in from usb rx buffer
-      usbIfaceReadBytes( &usb );
+    // Read data in from usb rx buffer
+    usbIfaceReadBytes( &usb );
 
-      // Check if we have a new midi message
-      if ( midiParserHasMsg(&midi, &input_msg) ) {
-        mYellowTOGGLE;
-        // If so send a midi message over zigbee
-        output_msg.channel = input_msg.channel;
-        output_msg.channel = input_msg.channel;
-        output_msg.channel = input_msg.channel;
-        output_msg.channel = input_msg.channel;
-        SendZigbeePacket(&zigbee_interface, MsgTypeMidi, (uint8_t*)&output_msg, sizeof(MsgMidi)); //Send the packet
-      }
-      // Write data out of usb tx buffer 
-      usbIfaceWriteBytes( &usb );
-      
-      // Send out bytes in zigbee tx buffer
-      SendZigbeeNow(&zigbee_interface);
+    // Check if we have a new midi message
+    if ( midiParserHasMsg(&midi, &input_msg) ) {
+      mGreenTOGGLE;
+      // If so send a midi message over zigbee
+      output_msg.status  = input_msg.status;
+      output_msg.channel = input_msg.channel;
+      output_msg.data[0] = input_msg.data[0];
+      output_msg.data[1] = input_msg.data[1];
+
+      // When we get a message print it back over usb for debugging
+      usbIfacePrintf(&usb, "status  %02x\n",output_msg.status);
+      usbIfacePrintf(&usb, "channel %02x\n",output_msg.channel);
+      usbIfacePrintf(&usb, "data[0] %02x\n",output_msg.data[0]);
+      usbIfacePrintf(&usb, "data[1] %02x\n\n",output_msg.data[1]);
+
+      SendZigbeePacket(&zigbee_interface, MsgTypeMidi, (uint8_t*)&output_msg, sizeof(MsgMidi)); //Send the packet
+    }
+    // Write data out of usb tx buffer 
+    usbIfaceWriteBytes( &usb );
+    
+    // Send out bytes in zigbee tx buffer
+    SendZigbeeNow(&zigbee_interface);
   }
   
   return(0);  

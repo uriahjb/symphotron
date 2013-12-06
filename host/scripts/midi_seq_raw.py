@@ -91,5 +91,12 @@ while len(events):
 print "Sequencing Complete"
 
 
+while True:
+  data = ser.readline()
+  if data == '':
+    break
+  print repr(data)
+
+
 
 

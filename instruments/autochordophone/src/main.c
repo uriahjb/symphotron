@@ -13,6 +13,7 @@
 #include "usb_iface.h"
 #include "midi_parser.h"
 
+// Mapping from note to stepper position
 #define G3  -190
 #define A3  -370
 #define B3  -550
@@ -37,13 +38,9 @@ int k=0;
 int test2=0;
 int f=0;
 
-
-
 void picker_setup(void);
 void strum(void);
 void damp(void);
-
-
 
 void hold(uint16_t T){ //Timer up to 1 seconds. (currently)
     
@@ -75,7 +72,6 @@ int main( void )
     mInit();
     mUSBInit();
     mBusInit();
-    
     
     bQueue in_q;
     bQueue out_q;
