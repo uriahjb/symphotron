@@ -17,7 +17,7 @@ from random import randint
 # Load all the images into RAM
 imgs = []
 
-num_frames = 9999
+num_frames = 400
 
 '''
 print "Loading images"
@@ -34,12 +34,20 @@ print "Image per second", num_frames/dt
 
 pygame.init()
 
-imgs.append( pygame.image.load('/Users/ujb/Class/IPD516/v2i_test/frame%04d.png' % 1 ))
+frames_str = '/Users/ujb/Class/IPD516/goodstuff/'
+
+imgs.append( pygame.image.load(frames_str + 'frame%04d.png' % 1 ))
 
 white = (255, 64, 64)
 w = imgs[0].get_width() 
 h = imgs[0].get_height()
-screen = pygame.display.set_mode((w, h))
+print w,h
+aspect_ratio = float(h)/w
+#screen = pygame.display.set_mode((w, h))
+width = 1200
+screen_size = (width, int(width*aspect_ratio))
+print "screen size: ", screen_size
+screen = pygame.display.set_mode(screen_size)
 screen.fill((white))
 running = 1
 
@@ -62,7 +70,7 @@ while running:
             direction = randint(0,1)
             if direction == 0:
                 direction = -1
-            speed = randint(4,20)
+            speed = randint(2,7)
         
 
         frame_num += direction*speed
@@ -75,12 +83,13 @@ while running:
            fps_counter = 0
         
         if frame_num <= 0:
-           frame_num = num_frames
+           frame_num = num_frames-1
         if frame_num >= num_frames:
            frame_num = 0
 
         screen.fill((white))
-        img = pygame.image.load('/Users/ujb/Class/IPD516/v2i_test/frame%04d.png' % (frame_num+1) )
+        img = pygame.image.load(frames_str + 'frame%04d.png' % (frame_num+1) )
+        img = pygame.transform.scale(img, screen_size)
         screen.blit(img, (0,0))
         #screen.blit(imgs[frame_num],(0,0))
         pygame.display.flip()
