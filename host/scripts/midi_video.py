@@ -1,5 +1,11 @@
 '''
 Controlling video from midi
+
+At each frame we load an image from the hd, 
+
+video images are created via:
+  ffmpeg -i globe_good_ocean.mov v2i_test/frame%04d.png
+
 '''
 
 import pygame
@@ -43,8 +49,14 @@ speed = 1
 frame_num = 0
 fps_counter = 0
 t0 = now()
+
+ft0 = now()
+
 while running:
     try:
+        if now() - ft0 < 1/30.0:
+          continue
+        ft0 = now()
 
         if randint(1,20) == 1:
             direction = randint(0,1)
