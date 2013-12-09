@@ -14,6 +14,8 @@ from pygame.locals import*
 from time import time as now, sleep
 from random import randint
 
+from socket import socket, AF_INET, SOCK_DGRAM
+
 # Load all the images into RAM
 imgs = []
 
@@ -31,7 +33,12 @@ dt = now() - t0
 print "Load time: ", dt
 print "Image per second", num_frames/dt
 '''
+# Set up socket
+sock = socket(SOCK_DGRAM, AF_INET)
+sock.bind(('localhost', 8181))
+sock.settimeout(0.001)
 
+# Initialize pygame
 pygame.init()
 
 frames_str = '/Users/ujb/Class/IPD516/goodstuff/'
@@ -63,16 +70,22 @@ ft0 = now()
 while running:
     try:
         if now() - ft0 < 1/30.0:
-          continue
+            continue
         ft0 = now()
 
-        if randint(1,20) == 1:
+        # See if we have a message
+        msg = None
+        try:
+            msg = sock.recv(1081)
+        except:
+          pass
+        #if randint(1,20) == 1:
+        if msg:
             direction = randint(0,1)
             if direction == 0:
                 direction = -1
             speed = randint(2,7)
         
-
         frame_num += direction*speed
         fps_counter+=1
      

@@ -1,5 +1,5 @@
 '''
-Python Sequencer that sends data over serial port
+Python Sequencer that sends data over serial port and udp
 
 At the moment this assumes that the tempo is fixed
   - ie: doesn't look for tempo change events
@@ -8,6 +8,9 @@ At the moment this assumes that the tempo is fixed
 import sys, getopt
 from time import time as now 
 import serial
+
+from socket import socket, AF_INET, SOCK_DGRAM
+from json import dumps
 
 from midi import read_midifile
 from midi.events import *
@@ -28,31 +31,56 @@ def encode_midi_event(event):
         raise ValueError, "Unknown MIDI Event: " + str(event)
     return ret
 
+def jsonify_midi_event(event):
+    if isinstance(event, Event):
+      return {'statusmsg':event.statusmsg
+             ,'channel':event.channel
+             ,'data':event.data}
+    elif isinstance(event, MetaEvent):
+      print "MetaEvent: " + str(event)
+    elif isinstance(event, SysexEvent):
+      print "SysexEvent: " + str(event)
+    else:
+        raise ValueError, "Unknown MIDI Event: " + str(event)
+    
+
+help_str = 'midi_raw_seq.py -i </dev/tty...> -f <midi_file>'
+
 try:
-  opts, args = getopt.getopt(sys.argv[1:],"h:i:f:",["iface=","file="])
+  opts, args = getopt.getopt(sys.argv[1:],"h:i:f:a:p:",["iface=","file=","addr=","port="])
 except getopt.GetoptError:
-  print 'midi_raw_seq.py -i </dev/tty...> -f <midi_file>'
+  print help_str
   sys.exit(2)
 
 # Default filename
 iface = None
 filename = 'mary.mid'
+addr = 'localhost'
+port = 8181
 for opt, arg in opts:
       if opt == '-h':
-        print 'midi_raw_seq.py -i </dev/tty...> -f <midi_file>'
+        print help_str 
         sys.exit()
       elif opt in ("-i", "--iface"):
          iface = arg
       elif opt in ("-f", "--file"):
          filename = arg
+      elif opt in ("-a", "--addr"):
+         addr = arg
+      elif opt in ("-p", "--port"):
+         port = int(arg)
 
 if iface is None:
-  print 'midi_raw_seq.py -i </dev/tty...> -f <midi_file>'
-  sys.exit()
+  print "Starting iface without serial interface"
 
 # Set up serial
 #ser = serial.Serial('/dev/tty.usbmodem1421')
-ser = serial.Serial(iface)
+if iface is not None:
+  ser = serial.Serial(iface)
+
+# Initialize udp socket
+sock = socket( SOCK_DGRAM, AF_INET )
+sock.connect( (addr,port) )
 
 pattern = read_midifile(filename)
 
@@ -86,7 +114,18 @@ while len(events):
       events.insert(0, evt)  
       break
     hxstr = ":".join("{0:x}".format(ord(c)) for c in encode_midi_event(evt))
-    ser.write( encode_midi_event(evt) )
+    # Write serial out
+    if iface is not None:
+      ser.write( encode_midi_event(evt) )
+    # Try to write socket out
+    try:
+      msg = jsonify_midi_event(evt)
+      if msg:
+        sock.send( dumps(msg) )
+    except KeyboardInterrupt:
+      break
+    except:
+      pass
     print evt, hxstr, curtime
 print "Sequencing Complete"
 
