@@ -1,0 +1,1 @@
+void TIM_Config(uint16_t pulse_1,uint16_t pulse_2);

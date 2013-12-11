@@ -94,8 +94,8 @@ for track in pattern:
 events.sort()
 
 # Convert bpm to ms_per_tick
-#bpm = 120
-bpm = 240
+bpm = 120
+#bpm = 240
 tempo = int(float(6e7) / bpm) / 1000
 ms_per_tick = tempo/float(pattern.resolution)
 
