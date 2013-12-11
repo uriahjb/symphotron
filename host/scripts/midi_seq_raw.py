@@ -49,13 +49,14 @@ def jsonify_midi_event(event):
 help_str = 'midi_raw_seq.py -i </dev/tty...> -f <midi_file>'
 
 try:
-  opts, args = getopt.getopt(sys.argv[1:],"h:i:f:a:p:",["iface=","file=","addr=","port="])
+  opts, args = getopt.getopt(sys.argv[1:],"h:i:f:a:p:n",["iface=","file=","addr=","port=","no_serial"])
 except getopt.GetoptError:
   print help_str
   sys.exit(2)
 
 # Default filename
 iface = None
+no_serial = False
 filename = 'mary.mid'
 addr = 'localhost'
 port = 8181
@@ -71,6 +72,8 @@ for opt, arg in opts:
          addr = arg
       elif opt in ("-p", "--port"):
          port = int(arg)
+      elif opt in ["-n", "--no_serial"]:
+         no_serial = True
 
 # If iface is not specified, automatically accumulate all ser divices
 instruments = []
@@ -84,7 +87,10 @@ if iface is not None:
   instruments.append(ser)
 
 if len(instruments) == 0:
-  print "Starting iface without serial interface"
+  if not no_serial:
+    print "Error: not serial interfaces, for no-serial specify -n or --no_serial"
+    sys.exit();
+  print "Warning: Starting without serial interfaces"
 else:
   print "Instruments found: ", instruments
 
