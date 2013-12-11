@@ -14,6 +14,8 @@ from json import dumps
 
 from midi import read_midifile
 from midi.events import *
+
+from glob import glob
 '''
 Encode midi event, shamelessly stolen and modified from
 fileio.py
@@ -70,13 +72,24 @@ for opt, arg in opts:
       elif opt in ("-p", "--port"):
          port = int(arg)
 
+# If iface is not specified, automatically accumulate all ser divices
+instruments = []
 if iface is None:
+  devs = glob('/dev/tty.usbmodem*')
+  for dev in devs:
+    instruments.append(serial.Serial(dev))
+  
+if iface is not None:
+  ser = serial.Serial(iface)
+  instruments.append(ser)
+
+if len(instruments) == 0:
   print "Starting iface without serial interface"
+else:
+  print "Instruments found: ", instruments
 
 # Set up serial
 #ser = serial.Serial('/dev/tty.usbmodem1421')
-if iface is not None:
-  ser = serial.Serial(iface)
 
 # Initialize udp socket
 sock = socket( SOCK_DGRAM, AF_INET )
@@ -115,8 +128,13 @@ while len(events):
       break
     hxstr = ":".join("{0:x}".format(ord(c)) for c in encode_midi_event(evt))
     # Write serial out
+    encoded_evt = encode_midi_event(evt) 
+    for instrument in instruments:
+      instrument.write( encoded_evt )
+    '''
     if iface is not None:
       ser.write( encode_midi_event(evt) )
+    '''
     # Try to write socket out
     try:
       msg = jsonify_midi_event(evt)
