@@ -19,7 +19,7 @@ from socket import socket, AF_INET, SOCK_DGRAM
 # Load all the images into RAM
 imgs = []
 
-num_frames = 400
+num_frames = 7458
 
 '''
 print "Loading images"
@@ -41,9 +41,11 @@ sock.settimeout(0.001)
 # Initialize pygame
 pygame.init()
 
-frames_str = '/Users/ujb/Class/IPD516/goodstuff/'
+#frames_str = '/Users/ujb/Class/IPD516/goodstuff/'
+frames_str = '/Users/ujb/Desktop/SpaceSequence/'
 
-imgs.append( pygame.image.load(frames_str + 'frame%04d.png' % 1 ))
+#imgs.append( pygame.image.load(frames_str + 'frame%04d.png' % 1 ))
+imgs.append( pygame.image.load(frames_str + 'footage%04d.jpg' % 1 ))
 
 white = (255, 64, 64)
 w = imgs[0].get_width() 
@@ -79,12 +81,14 @@ while running:
             msg = sock.recv(1081)
         except:
           pass
-        #if randint(1,20) == 1:
-        if msg:
+        if randint(1,20) == 1:
+        #if msg:
             direction = randint(0,1)
             if direction == 0:
                 direction = -1
-            speed = randint(2,7)
+            speed = randint(1,3)
+        if randint(1,100) == 1:
+          frame_num = randint(1,num_frames)
         
         frame_num += direction*speed
         fps_counter+=1
@@ -101,7 +105,7 @@ while running:
            frame_num = 0
 
         screen.fill((white))
-        img = pygame.image.load(frames_str + 'frame%04d.png' % (frame_num+1) )
+        img = pygame.image.load(frames_str + 'footage%04d.jpg' % (frame_num+1) )
         img = pygame.transform.scale(img, screen_size)
         screen.blit(img, (0,0))
         #screen.blit(imgs[frame_num],(0,0))

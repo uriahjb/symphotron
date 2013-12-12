@@ -71,7 +71,7 @@ int main( void )
 {
     mInit();
     mUSBInit();
-    mBusInit();
+    //mBusInit();
     
     bQueue in_q;
     bQueue out_q;
@@ -81,30 +81,34 @@ int main( void )
     usbIfaceInit( &usb, &in_q, &out_q );
     
     // Set up midi parser
-    midiParser parcer;
-    midiParserInit( &parcer, &in_q );
+    midiParser parser;
+    midiParserInit( &parser, &in_q );
     midiMsg msg;
     
-    picker_setup();
+    //picker_setup();
     stepper_setup();
     set_timer5 (60000,30000,1200);
-    
-    setMode( STEP_4TH);
-    setSpeedLimits( 65, 200 );
+   
+    setMode( STEP_4TH );
+    setSpeedLimits( 65, 300 );
     set_speed(m_speed_min);
-    setAccelerationLimit(1500);
+    setAccelerationLimit(500);
     
     int test=0;
     
     //    uint16_t pos[]={0,-180,0,-360,0,-540,0,-720,-900,0};
     //    uint16_t dur[]={1000,1000,1000,1000};
+    
     uint16_t pos=0;
-    set_speed(m_speed_min);
+    /*
+    //set_speed(m_speed_min);
     int i=0;
     update(0);
     //    TIM_Cmd(TIM5, DISABLE);
-    int Sflag=0;
     accStop();
+    setPosition(0);
+    */
+    int Sflag=0;
     
     
     //strum_delay(1);
@@ -117,10 +121,10 @@ int main( void )
         //                Sflag=0;
         //            }
         //        }
-        
+        update(pos);    
         
         usbIfaceReadBytes(&usb);
-        if(midiParserHasMsg(&parcer,&msg)){
+        if(midiParserHasMsg(&parser,&msg)){
             mGreenTOGGLE;
             usbIfacePrintf(&usb, "status  %02x\n",msg.status);
             usbIfacePrintf(&usb, "channel %02x\n",msg.channel);
