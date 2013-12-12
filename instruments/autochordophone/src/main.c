@@ -85,11 +85,11 @@ int main( void )
     midiParserInit( &parser, &in_q );
     midiMsg msg;
     
-    //picker_setup();
+    picker_setup();
     stepper_setup();
     set_timer5 (60000,30000,1200);
    
-    setMode( STEP_4TH );
+    setMode( STEP_8TH );
     setSpeedLimits( 65, 300 );
     set_speed(m_speed_min);
     setAccelerationLimit(500);
@@ -131,6 +131,7 @@ int main( void )
             usbIfacePrintf(&usb, "data[0] %02x\n",msg.data[0]);
             usbIfacePrintf(&usb, "data[1] %02x\n\n",msg.data[1]);
             if(msg.status==NOTE_ON){
+                strum();
                 Sflag=1;
                 switch(msg.data[0]){
                     case 57:
@@ -168,7 +169,6 @@ int main( void )
             }
         }
         usbIfaceWriteBytes(&usb);
-        
     }
 }
 
@@ -189,13 +189,15 @@ void strum(void){
     
     switch(pose){
         case 1:
-            modulatePick(3400);
-            modulateArm(2075);
+            //modulatePick(3400);
+            //modulateArm(2075);
+            //modulatePick(3400);
+            modulateArm(2800);
             pose=2;
             break;
         case 2:
-            modulatePick(4000);
-            modulateArm(2450);
+            //modulatePick(4000);
+            modulateArm(3400);
             pose=1;
             break;
         default:
@@ -214,11 +216,12 @@ void damp(void){
 
 void TIM5_IRQHandler(void)
 {
-    mRedON;
-    strum();
+    //mRedON;
+    //strum();
     TIM_ClearFlag(TIM5,TIM_FLAG_CC1);
-    TIM5->CNT=0;
+    //TIM5->CNT=0;
 }
+
 void TIM12_IRQHandler(void)
 {
     TIM_ClearFlag(TIM12,TIM_FLAG_CC1 | TIM_FLAG_CC2 | TIM_FLAG_CC3 | TIM_FLAG_CC4);
