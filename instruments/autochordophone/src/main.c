@@ -12,6 +12,9 @@
 #include "usb_iface.h"
 #include "midi_parser.h"
 
+#define INSTRUMENT_CHANNEL 0
+#define BOTH_CHANNEL 3
+
 // Mapping from note to stepper position
 /*
 #define G3  -190
@@ -49,6 +52,12 @@
 #define B3 -960 
 #define C4 -985 
 #define CS4 -1010 
+
+
+// Tuning attempt 2... :
+#define E2 0
+#define B2 -510
+#define C3 -600
 
 volatile uint16_t p=0;
 volatile uint16_t T5flag=1;
@@ -114,9 +123,9 @@ int main( void )
     set_timer5 (60000,30000,1200);
    
     setMode( STEP_HALF );
-    setSpeedLimits( 65, 400 );
+    setSpeedLimits( 65, 200 );
     set_speed(m_speed_min);
-    setAccelerationLimit(400);
+    setAccelerationLimit(200);
     
     int test=0;
     
@@ -154,7 +163,7 @@ int main( void )
             usbIfacePrintf(&usb, "channel %02x\n",msg.channel);
             usbIfacePrintf(&usb, "data[0] %02x\n",msg.data[0]);
             usbIfacePrintf(&usb, "data[1] %02x\n\n",msg.data[1]);
-            if(msg.channel == 1 ) {
+            if(msg.channel == INSTRUMENT_CHANNEL || msg.channel == BOTH_CHANNEL) {
               if(msg.status==NOTE_ON){
                   strum();
                   Sflag=1;

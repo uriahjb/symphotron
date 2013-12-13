@@ -15,6 +15,26 @@ from time import time as now, sleep
 from random import randint
 
 from socket import socket, AF_INET, SOCK_DGRAM
+import sys, getopt
+
+try:
+  opts, args = getopt.getopt(sys.argv[1:],"h:f:",["file="])
+except getopt.GetoptError:
+  print help_str
+  sys.exit(2)
+
+help_str = 'args: -h, -f'
+dirname = None
+for opt, arg in opts:
+  if opt == '-h':
+    print help_str
+  elif opt in ("-f", "--file"):
+    dirname = arg
+
+if not dirname:
+  print "no directory spec'd" + help_str
+
+
 
 # Load all the images into RAM
 imgs = []
@@ -42,10 +62,12 @@ sock.settimeout(0.001)
 pygame.init()
 
 #frames_str = '/Users/ujb/Class/IPD516/goodstuff/'
-frames_str = '/Users/ujb/Desktop/SpaceSequence/'
+frames_str = '/Users/ujb/Desktop/' + dirname
 
-#imgs.append( pygame.image.load(frames_str + 'frame%04d.png' % 1 ))
-imgs.append( pygame.image.load(frames_str + 'footage%04d.jpg' % 1 ))
+frames_names = os.listdir(frames_str)
+prefix = frames_names[-1].split('0')[0]
+
+imgs.append( pygame.image.load(frames_str + '%04d.jpg' % 1 ))
 
 white = (255, 64, 64)
 w = imgs[0].get_width() 
