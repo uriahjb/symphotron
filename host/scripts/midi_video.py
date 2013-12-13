@@ -24,22 +24,31 @@ except getopt.GetoptError:
   sys.exit(2)
 
 help_str = 'args: -h, -f'
-dirname = None
+fname = None
 for opt, arg in opts:
   if opt == '-h':
     print help_str
   elif opt in ("-f", "--file"):
-    dirname = arg
+    fname = arg
 
-if not dirname:
+if not fname:
   print "no directory spec'd" + help_str
+  sys.exit()
 
 
 
 # Load all the images into RAM
 imgs = []
 
-num_frames = 7458
+if fname == 'Stars':
+    num_frames = 3130-300
+elif fname == 'Earth':
+    num_frames = 3907
+elif fname == 'Home':
+    num_frames = 1814
+else:
+  print "options are: Stars, Earth, Home"
+  sys.exit()
 
 '''
 print "Loading images"
@@ -62,12 +71,14 @@ sock.settimeout(0.001)
 pygame.init()
 
 #frames_str = '/Users/ujb/Class/IPD516/goodstuff/'
-frames_str = '/Users/ujb/Desktop/' + dirname
+frames_str = '/Users/ujb/Desktop/' + fname
 
-frames_names = os.listdir(frames_str)
-prefix = frames_names[-1].split('0')[0]
-
-imgs.append( pygame.image.load(frames_str + '%04d.jpg' % 1 ))
+if fname == 'Stars':
+    imgs.append( pygame.image.load(frames_str+'/Time_%05d.jpg' % 215 ))
+elif fname == 'Earth':
+    imgs.append( pygame.image.load(frames_str+'/Space%05d.jpg' % 1 ))
+elif fname == 'Home':
+    imgs.append( pygame.image.load(frames_str+'/flower_%05d.jpg' % 1 ))
 
 white = (255, 64, 64)
 w = imgs[0].get_width() 
@@ -127,7 +138,13 @@ while running:
            frame_num = 0
 
         screen.fill((white))
-        img = pygame.image.load(frames_str + 'footage%04d.jpg' % (frame_num+1) )
+        #img = pygame.image.load(frames_str + 'footage%04d.jpg' % (frame_num+1) )
+        if fname == 'Stars':
+            img = pygame.image.load(frames_str+'/Time_%05d.jpg' % (frame_num+215) )
+        elif fname == 'Earth':
+            img = pygame.image.load(frames_str+'/Space%05d.jpg' % (frame_num+1) )
+        elif fname == 'Home':
+            img = pygame.image.load(frames_str+'/flower_%05d.jpg' % (frame_num+1) )
         img = pygame.transform.scale(img, screen_size)
         screen.blit(img, (0,0))
         #screen.blit(imgs[frame_num],(0,0))
