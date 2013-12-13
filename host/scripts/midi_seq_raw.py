@@ -49,7 +49,7 @@ def jsonify_midi_event(event):
 help_str = 'midi_raw_seq.py -i </dev/tty...> -f <midi_file>'
 
 try:
-  opts, args = getopt.getopt(sys.argv[1:],"h:i:f:a:p:n",["iface=","file=","addr=","port=","no_serial"])
+  opts, args = getopt.getopt(sys.argv[1:],"h:i:f:a:p:n:q",["iface=","file=","addr=","port=","no_serial", "quick_start"])
 except getopt.GetoptError:
   print help_str
   sys.exit(2)
@@ -60,6 +60,7 @@ no_serial = False
 filename = 'mary.mid'
 addr = 'localhost'
 port = 8181
+quickstart = False
 for opt, arg in opts:
       if opt == '-h':
         print help_str 
@@ -74,16 +75,21 @@ for opt, arg in opts:
          port = int(arg)
       elif opt in ["-n", "--no_serial"]:
          no_serial = True
+      elif opt in ["-q", "--quick_start"]:
+         quickstart = True
 
 # If iface is not specified, automatically accumulate all ser divices
 instruments = []
 if iface is None:
   devs = glob('/dev/tty.usbmodem*')
   for dev in devs:
-    instruments.append(serial.Serial(dev))
+    ser = serial.Serial(dev)
+    ser.setBaudrate(115200)
+    instruments.append(ser)
   
 if iface is not None:
   ser = serial.Serial(iface)
+  ser.setBaudrate(115200)
   instruments.append(ser)
 
 if len(instruments) == 0:
@@ -112,6 +118,15 @@ for track in pattern:
 # Sort events by time
 events.sort()
 
+if quickstart:
+    # Find first note on event
+    for i in xrange(0,len(events)):
+        evt = events[i]
+        if evt.name == 'Note On':
+            break
+
+    events = events[i:]
+
 # Convert bpm to ms_per_tick
 bpm = 120
 #bpm = 240
@@ -122,7 +137,11 @@ ms_per_tick = tempo/float(pattern.resolution)
 # Note this probably isn't as fancy as a traditional midi sequencer
 # but it is very versatile
 print "Sequencing Initialization"
-t0 = now()
+if quickstart:
+    ts0 = (events[0].tick * ms_per_tick)/1000.0
+    t0 = now() - ts0
+else:
+    t0 = now()
 while len(events):
   curtime = now() - t0
   curtime

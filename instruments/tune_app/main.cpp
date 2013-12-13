@@ -51,10 +51,10 @@ int main( void )
     stepper_setup();
 //    set_timer5 (60000,30000,1200);
     
-    setMode( STEP_FULL);
-    setSpeedLimits( 65, 300 );
+    setMode( STEP_8TH);
+    setSpeedLimits( 65, 500 );
     set_speed(m_speed_min);
-    setAccelerationLimit(500); //5000 is good
+    setAccelerationLimit(100); //5000 is good
     
     uint8_t cmd; 
     uint16_t pos = 0;

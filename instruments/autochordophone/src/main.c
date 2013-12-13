@@ -4,7 +4,6 @@
 #include "stdio.h"
 #include "stm32f37x.h"
 #include "mEasy.h"
-#include "stepper.h"
 #include <math.h>
 #include "arm_math.h"
 #include "Stepper.h"
@@ -14,6 +13,7 @@
 #include "midi_parser.h"
 
 // Mapping from note to stepper position
+/*
 #define G3  -190
 #define A3  -370
 #define B3  -550
@@ -25,6 +25,30 @@
 #define A4  -1160
 #define B4  -1260
 #define C5  -1310
+*/
+
+#define E2 0 
+#define F2 -70
+#define FS2 -140
+#define G2 -220
+#define GS2 -270
+#define A2 -340
+#define AS2 -400
+#define B2 -450
+#define C3 -500
+#define CS3 -550
+#define D3 -610
+#define DS3 -660
+#define E3 -700
+#define F3 -740
+#define FS3 -780 
+#define G3 -820
+#define GS3 -850
+#define A3 -885
+#define AS3 -925
+#define B3 -960 
+#define C4 -985 
+#define CS4 -1010 
 
 volatile uint16_t p=0;
 volatile uint16_t T5flag=1;
@@ -89,10 +113,10 @@ int main( void )
     stepper_setup();
     set_timer5 (60000,30000,1200);
    
-    setMode( STEP_8TH );
-    setSpeedLimits( 65, 300 );
+    setMode( STEP_HALF );
+    setSpeedLimits( 65, 400 );
     set_speed(m_speed_min);
-    setAccelerationLimit(500);
+    setAccelerationLimit(400);
     
     int test=0;
     
@@ -130,10 +154,78 @@ int main( void )
             usbIfacePrintf(&usb, "channel %02x\n",msg.channel);
             usbIfacePrintf(&usb, "data[0] %02x\n",msg.data[0]);
             usbIfacePrintf(&usb, "data[1] %02x\n\n",msg.data[1]);
-            if(msg.status==NOTE_ON){
-                strum();
-                Sflag=1;
-                switch(msg.data[0]){
+            if(msg.channel == 1 ) {
+              if(msg.status==NOTE_ON){
+                  strum();
+                  Sflag=1;
+                  switch(msg.data[0]){
+                      case 40:
+                        pos = E2;
+                        break;
+                      case 41:
+                        pos = F2;
+                        break;
+                      case 42:
+                        pos = FS2;
+                        break;
+                      case 43:
+                        pos = G2;
+                        break;
+                      case 44:
+                        pos = GS2;
+                        break;
+                      case 45:
+                        pos = A2;
+                        break;
+                      case 46:
+                        pos = AS2;
+                        break;
+                      case 47:
+                        pos = B2;
+                        break;
+                      case 48:
+                        pos = C3;
+                        break;
+                      case 49:
+                        pos = CS3;
+                        break;
+                      case 50:
+                        pos = D3;
+                        break;
+                      case 51:
+                        pos = DS3;
+                        break;
+                      case 52:
+                        pos = E3;
+                        break;
+                      case 53:
+                        pos = F3;
+                        break;
+                      case 54:
+                        pos = FS3;
+                        break;
+                      case 55:
+                        pos = G3;
+                        break;
+                      case 56:
+                        pos = GS3;
+                        break;
+                      case 57:
+                        pos = A3;
+                        break;
+                      case 58:
+                        pos = AS3;
+                        break;
+                      case 59:
+                        pos = B3;
+                        break;
+                      case 60:
+                        pos = C4;
+                        break;
+                      default:
+                        break;
+
+                    /*
                     case 57:
                         pos=A3;
                         break;
@@ -165,7 +257,9 @@ int main( void )
                         break;
                     default:
                         break;
-                }
+                    */
+                  }
+               }
             }
         }
         usbIfaceWriteBytes(&usb);
@@ -201,9 +295,11 @@ void strum(void){
             pose=1;
             break;
         default:
+            /*
             mWhiteON;
             mWaitms(100);
             mWhiteOFF;
+            */
             break;
     }
 }
